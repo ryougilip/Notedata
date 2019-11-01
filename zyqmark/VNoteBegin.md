@@ -79,7 +79,6 @@ VNote笔记本可以指定图片的储存地方(默认是该笔记所在的文�
 文件保存后, 若修改了文件内容, 删掉了图片链接, 再次保存时会提示是否删除文件! (但是如果删除笔记好像不会删除图片).
 
 **其他功能**
-其他功能
 
     小推车 : 在工具中有小推车标签. 小推车可以右键笔记加入到小推车. 小推车内的笔记一般是没完成的笔记.
     钉到历史 : 在左侧的窗口中的历史中, 会有一栏是钉住的, 右键笔记可以钉住
@@ -97,7 +96,7 @@ VNote笔记本可以指定图片的储存地方(默认是该笔记所在的文�
 ### 1.3.2. markdown使用指南
 ***工具栏帮助下拉菜单，打开文档***
 右侧大纲
-标题4,5 渲染较好ctrl 4,5
+各种快捷键  标题4,5 渲染较好ctrl 4,5
 
 ### 1.3.3. 笔记注意事项
 **段落之间必需空行**
@@ -149,12 +148,16 @@ git clone https://github.com/ryougilip/Notedata.git
 * 4. **同步代码**
 ```
 cd F:/files/share
+git add -i
+#列出所有修改过的文件及它们的状态
 git add *
 #添加到暂存区
 git status
 #查看修改文件的状态
 $ git commit -m "注释xx"
 #提交信息,纳入本地git HEAD区
+git remote add origin https://github.com/xx/xx.git
+#当使用的仓库是 git init 初始化了一个新的本地仓库，需要remote将本地仓库与远程仓库关联
 git push
 #推送到github
 #下一次工作笔记需要拉取仓库更新时，
@@ -168,15 +171,60 @@ ssh-keygen -t rsa -C "gana10007@163.com"  -f ~/.ssh/coding-rsa
 #密钥在家目录c盘..
 ```
 
-* 6.  进入自定义目录，进行拉取，成功后可以看到账户密钥变绿色（正在使用）。
+* 6.  进入自定义目录，进行克隆，成功后可以看到账户密钥变绿色（正在使用）。
 ```
 cd ///
 git clone https://github.com/ryougilip/Notedata.git
 ```
 
-* 7. 在VNote中添加目录中的笔记本，进行笔记，可以在**git所在的文件夹**中，git bash here, 查看 git status并进行添加提交推送，内容可以同步到github。而前一个已用过的设备进行拉取git pull，修改，也可以进行同样的操作。
+* 7. 在VNote中添加目录中的笔记本，进行笔记，可以在**git所在的文件夹**中，git bash here, 查看 git status并进行添加提交推送，内容可以同步到github。当你克隆时建了一个新目录，里面会有仓库内容（`...Notedata.git xfolder`），工作完需要到原仓库目录下，拉取xfolder工作目录`git pull /.../xfolder master`，这样就xfolder合并到Notedata分支了。而前一个已用过的设备也可以进行同样的操作，进行拉取git pull修改（git pull 命令等同于执行两个操作: 先使用 git fetch 从远程分支抓取最新的分支修改信息，然后使用 git merge 把修改合并进当前的分支）。可以通过 git log 查看远程分支做的所有修改。
 ```
 git config user.name "ryougilip"
 git config user.email "zyqcarl@163.com"
 局部设置身份标识
+```
+* 8. 一个 Git 仓库可以维护很多开发分支。现在我们来创建一个新的叫 experimental 的分支：
+```
+$ git branch experimental
+```
+运行 git branch 命令可以查看当前的分支列表，以及目前的开发环境处在哪个分支上：
+```
+$ git branch
+ experimental
+* master
+```
+experimental 分支是你刚才创建的，master 分支是 Git 系统默认创建的主分支。星号标识了你当工作在哪个分支下，输入 git checkout 分支名 可以切换到其他分支：
+```
+$ git checkout experimental
+Switched to branch 'experimental'
+```
+切换到 experimental 分支，切换完成后，先编辑里面的一个文件，再提交（commit）改动，最后切换回 master 分支：查看下 file1 中的内容会发现刚才做的修改已经看不到了。因为刚才的修改时在 experimental 分支下，现在切换回了 master 分支，目录下的文件都是 master 分支上的文件了。
+* Tips
+commit:  
+为 commit 做好了准备，你可以使用 git diff 命令再加上 --cached 参数，看看缓存区中哪些文件被修改了。进入到 git diff --cached 界面后需要输入 q 才可以退出;
+需要使用 -m 添加本次修改的注释，完成后就会记录一个新的项目版本。除了用 git add 命令，我们还可以用下面的 -a 参数将所有没有加到缓存区的修改也一起提交，但 -a 命令不会添加新建的文件。
+```
+$ git commit -a -m "add 3 files"
+```
+再次输入 git status 查看状态，会发现当前的代码库已经没有待提交的文件了，缓存区已经被清空。
+如果是修改文件，也需要使用 git add 命令添加到缓存区才可以提交。如果是删除文件，则直接使用 git rm 命令删除后会自动将已删除文件的信息添加到缓存区，git commit 提交后就会将本地仓库中的对应文件删除。
+
+
+**公共仓库**
+开发过程中，通常大家都会使用一个公共的仓库，并 clone 到自己的开发环境中，完成一个阶段的代码后可以告诉目标仓库的维护者来 pull 自己的代码。
+
+如果你和维护者都在同一台机器上有帐号，那么你们可以互相从对 方的仓库目录里直接拉所作的修改，git 命令里的仓库地址也可以是本地的某个目录名：
+```
+$ git clone 仓库A的路径
+$ git pull 仓库B的路径
+```
+也可以是一个ssh地址：
+```
+$ git clone ssh://服务器/账号/仓库名称
+```
+
+可以在你的顶层工作目录中添加一个叫 .gitignore 的文件，来告诉 Git 系统要忽略掉哪些文件
+```
+*.json
+*.vswp
 ```
